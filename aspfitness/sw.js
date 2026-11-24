@@ -1,6 +1,6 @@
 // Guarda la app en el iPhone para que funcione sin conexión.
 // Cambia el número de versión cada vez que publiques cambios.
-const CACHE = 'aspfitness-v1-5';
+const CACHE = 'aspfitness-v1-6';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'data.js', 'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', e => {

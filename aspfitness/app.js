@@ -1122,8 +1122,14 @@ $('#importFile').addEventListener('change', async ev => {
       const ws = historyToWorkouts(obj.workouts || [], 'xl'), as = historyToActivities(obj.activities || [], 'xa');
       const newW = ws.filter(w => !state.workouts.some(x => x.id === w.id));
       const newA = as.filter(a => !state.activities.some(x => x.id === a.id));
-      if (!newW.length && !newA.length) { alert('Ese historial ya estaba importado.'); return; }
-      if (!confirm(`Añadir ${newW.length} sesiones de gym y ${newA.length} actividades de tu Excel? Lo que ya tienes se mantiene.`)) return;
+      const moved = [...ws.map(w => [w, state.workouts]), ...as.map(a => [a, state.activities])]
+        .map(([n, list]) => [n, list.find(x => x.id === n.id && x.imported && x.date !== n.date)]).filter(([, old]) => old);
+      if (!newW.length && !newA.length && !moved.length) { alert('Ese historial ya estaba importado.'); return; }
+      const parts = [];
+      if (newW.length || newA.length) parts.push(`añadir ${newW.length} sesiones de gym y ${newA.length} actividades`);
+      if (moved.length) parts.push(`corregir la fecha de ${moved.length} registros del Excel`);
+      if (!confirm(`¿${cap(parts.join(' y '))}? Lo que has registrado tú se mantiene.`)) return;
+      moved.forEach(([n, old]) => { old.date = n.date; });
       state.workouts.push(...newW); sortWorkouts(); state.activities.push(...newA);
       state.settings.welcomed = true; save(); ui.sheet = null; render(); toast('Historial importado ✓');
       return;
